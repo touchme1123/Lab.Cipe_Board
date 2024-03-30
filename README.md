@@ -5,7 +5,7 @@
 - 메인화면 캐러셀
 
 # 사용도구 및 언어
-Eclipse, spring, javascript, java, HTML, CSS, Jquery, ajax 등
+Eclipse, spring, javascript, java, HTML, CSS, Jquery, ajax, ORACLE
 
 # 첨부파일
 [Introduce_Lab.Cipe.pdf](https://github.com/touchme1123/rab.cipe_Board/files/14811345/Introduce_Lab.Cipe.pdf)
