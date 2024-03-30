@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+      PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.board">
+	<resultMap id="articlesResult" type="articleVO">
+
+
+		<result property="recipe_id" column="recipe_id" />
+		<result property="create_date" column="create_date" />
+		<result property="file_path" column="file_path" />
+		<result property="member_id" column="member_id" />
+		<result property="recipe_category" column="recipe_category" />
+		<result property="recipe_ingredients"
+			column="recipe_ingredients" />
+		<result property="recipe_name" column="recipe_name" />
+		<result property="viewcnt" column="viewcnt" />
+		<result property="recipe_text" column="recipe_text" />
+	</resultMap>
+
+	<resultMap id="imgResult" type="imageVO">
+		<result property="imageFileNO" column="imageFileNO" />
+		<result property="articleNO" column="articleNO" />
+		<result property="imageFileName" column="imageFileName" />
+	</resultMap>
+
+	<!-- <select id="selectAllArticlesList" resultMap="articlesResult" > <![CDATA[ 
+		SELECT articleNO, parentNO, title, content, writeDate, imageFileName, id 
+		from t_board START WITH parentNO=0 CONNECT BY PRIOR articleNO=parentNO ORDER 
+		SIBLINGS BY articleNO DESC ]]> </select> -->
+	<select id="selectAllArticlesList" resultMap="articlesResult">
+    <![CDATA[
+      SELECT recipe_id,
+        member_id,
+        file_path, 
+		recipe_category,
+		recipe_ingredients,
+		viewcnt,
+		recipe_name,
+		recipe_text,
+		to_char(create_date, 'YY/MM/DD DY pm HH:MI') as create_date
+      from recipe
+    ]]>
+	</select>
+	<!-- (새로 한거) 게시글 데이터 추가 -->
+	<!-- <resultMap id="insertArticle" type="ArticleVO"> <result property="recipe_id" 
+		column="recipe_id" /> <result property="create_date" column="create_date" 
+		/> <result property="file_path" column="file_path" /> <result property="member_id" 
+		column="member_id" /> <result property="recipe_category" column="recipe_category" 
+		/> <result property="recipe_ingredients" column="recipe_ingredients" /> <result 
+		property="recipe_name" column="recipe_name" /> <result property="recipe_text" 
+		column="recipe_text" /> </resultMap> -->
+		
+	<select id="mostView" resultMap="articlesResult">
+    <![CDATA[
+       SELECT *
+        FROM (
+          SELECT *
+          FROM recipe
+          ORDER BY viewcnt DESC
+          )
+       WHERE ROWNUM <= 3
+    ]]>
+	</select>
+
+	<insert id="insertArticle" parameterType="java.util.Map">
+	<![CDATA[ INSERT into recipe(recipe_id, file_path, member_id, recipe_category, recipe_ingredients, recipe_name, recipe_text)
+	VALUES(#{recipe_id, jdbcType=INTEGER}, #{file_path, jdbcType=VARCHAR}, #{member_id, jdbcType=VARCHAR}, #{recipe_category, jdbcType=VARCHAR}, #{recipe_ingredients, jdbcType=VARCHAR}, #{recipe_name, jdbcType=VARCHAR}, #{recipe_text, jdbcType=VARCHAR}) ]]>
+	</insert>
+
+	<!-- 수정함 -->
+	<select id="selectNewRecipeId" resultType="int">
+		<![CDATA[
+			SELECT  nvl(max(recipe_id), 0)+1 from recipe		
+		]]>
+	</select>
+	<!-- -->
+	<!-- 새로 추가함 3/20 -->
+	<select id="selectRecipeBySearchWord" resultMap="articlesResult"
+		parameterType="String">
+<![CDATA[ SELECT recipe_id, file_path, recipe_category, recipe_ingredients, recipe_name, recipe_text, to_char(create_date, 'YY/MM/DD DY pm HH:MI') as create_date FROM recipe WHERE recipe_name like '%'|| #{serachWord} ||'%' ORDER BY create_date desc ]]>
+	</select>
+
+	<!--단일이미지 추가 -->
+
+	<insert id="insertNewArticle" parameterType="java.util.Map">
+		<![CDATA[
+			INSERT into t_board(articleNO,  title, content, imageFileName, id)
+			VALUES(#{articleNO},#{title},	#{content}, #{imageFileName},	#{id})
+		]]>
+	</insert>
+
+
+
+	<select id="selectArticle" resultType="articleVO"
+		parameterType="int">
+    <![CDATA[
+      SELECT * from t_board
+      where articleNO = #{articleNO}		
+    ]]>
+	</select>
+
+	<update id="updateArticle" parameterType="java.util.Map">
+		update t_board
+		set title=#{title},
+		content=#{content}
+		<if test="imageFileName!='' and imageFileName!=null">
+			, imageFileName=#{imageFileName}
+		</if>
+		where articleNO=#{articleNO}
+	</update>
+
+	<update id="viewcnt" parameterType="int">
+		UPDATE recipe
+		SET viewcnt =
+		viewcnt + 1
+		WHERE recipe_id=#{recipe_id}
+	</update>
+
+	<delete id="deleteArticle" parameterType="int">
+    <![CDATA[
+      delete from t_board
+      where articleNO in (
+         SELECT articleNO FROM  t_board
+         START WITH articleNO = #{articleNO}
+         CONNECT BY PRIOR  articleNO = parentNO )
+    ]]>
+	</delete>
+	<!-- 3.20 박현수 작성 조회수 구현 -->
+
+	<!-- 3.20 박현수 작성 조회수 구현 -->
+	<!-- 3.20 박현수 작성 수정 구현 -->
+	<update id="modifyRecipe" parameterType="java.util.Map">
+		update recipe
+		set
+		recipe_name=#{recipe_name},
+		recipe_text=#{recipe_text},
+		recipe_ingredients=#{recipe_ingredients},
+		recipe_category=#{recipe_category},
+		file_path=#{file_path}
+		where
+		recipe_id=#{recipe_id}
+	</update>
+	<!-- 3.20 박현수 작성 수정 구현 -->
+	<!-- 3.19 박현수 작성 삭제 구현 -->
+	<delete id="removeRecipe" parameterType="int">
+    <![CDATA[
+      delete from recipe
+      where recipe_id = #{recipe_id}
+    ]]>
+	</delete>
+	<!-- 3.19 박현수 작성 -->
+
+	<!--다중 이미지 추가 SQL문 -->
+	<!-- <insert id="insertNewArticle" parameterType="java.util.Map"> <![CDATA[ 
+		insert into t_board(articleNO, id, title, content, imageFileName) values(#{articleNO}, 
+		#{id}, #{title}, #{content}, null) ]]> </insert> <insert id="insertNewImage" 
+		parameterType="java.util.Map"> <foreach item="item" collection="list" open="INSERT 
+		ALL" separator=" " close="SELECT * FROM DUAL" > INTO t_imageFile(imageFileNO, 
+		imageFileName, articleNO, regDate) VALUES (#{item.imageFileNO}, #{item.imageFileName}, 
+		#{item.articleNO}, sysdate) </foreach> </insert> -->
+
+	<select id="selectNewImageFileNO" resultType="int">
+    <![CDATA[
+      SELECT  nvl(max(imageFileNO),0) from t_imageFile		
+    ]]>
+	</select>
+
+
+	<select id="selectImageFileList" resultMap="imgResult"
+		parameterType="int">
+    <![CDATA[
+      SELECT * from t_imageFile
+      where articleNO=#{articleNO}	
+    ]]>
+	</select>
+
+</mapper>

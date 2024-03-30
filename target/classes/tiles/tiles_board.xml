@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+"-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+"http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+<tiles-definitions>
+	<definition name="/board/listArticles" extends="baseLayout">
+	      <put-attribute name="title" value="글목록창" />
+	      <put-attribute name="body" value="/WEB-INF/views/board/listArticles.jsp" />
+	</definition>
+	
+	<definition name="/board/articleForm" extends="baseLayout">
+		<put-attribute name="title" value="글쓰기창" />
+		<put-attribute name="body" value="/WEB-INF/views/board/articleForm.jsp" />
+	</definition>
+	
+	<definition name="/board/viewArticle" extends="baseLayout">
+    <put-attribute name="title" value="글상세창" />
+    <put-attribute name="body" value="/WEB-INF/views/board/viewArticle.jsp" />
+  </definition>
+  
+  
+  
+   <!-- 추가함 -->
+    <definition name="/recipe/recipeCreate" extends="baseLayout">
+      <put-attribute name="title" value="레시피생성" />
+      <put-attribute name="body" value="/WEB-INF/views/recipe/recipeCreate.jsp" />
+   </definition>
+   
+   <definition name="/board/chineseFood" extends="baseLayout">
+      <put-attribute name="title" value="중식" />
+      <put-attribute name="body" value="/WEB-INF/views/category/chineseFood.jsp" />
+   </definition>
+   
+   <definition name="/board/japaneseFood" extends="baseLayout">
+      <put-attribute name="title" value="일식" />
+      <put-attribute name="body" value="/WEB-INF/views/category/japaneseFood.jsp" />
+   </definition>
+   
+   <definition name="/board/koreanFood" extends="baseLayout">
+      <put-attribute name="title" value="한식" />
+      <put-attribute name="body" value="/WEB-INF/views/category/koreanFood.jsp" />
+   </definition>
+   
+   <definition name="/board/westernFood" extends="baseLayout">
+      <put-attribute name="title" value="양식" />
+      <put-attribute name="body" value="/WEB-INF/views/category/westernFood.jsp" />
+   </definition>
+	<!-- 추가함 -->	
+	
+	<definition name="/board/searchArticle" extends="baseLayout">
+      <put-attribute name="title" value="검색" />
+      <put-attribute name="body" value="/WEB-INF/views/board/searchArticle.jsp" />
+   </definition>
+	
+	
+</tiles-definitions>
